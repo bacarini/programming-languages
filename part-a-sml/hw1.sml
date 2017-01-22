@@ -79,23 +79,18 @@ fun oldest (dates : (int*int*int) list) =
 	  SOME (oldest_fun(dates))
       end
 
-fun remove_duplicate(numbers : int list) =
-  if null numbers
-  then []
-  else
-      let fun filter (uniq_num : int, nums_list : int list) =
-	    if null nums_list
-	    then []
-	    else
-		let val value = filter(uniq_num, tl nums_list) 
-		in
-		    if hd nums_list = uniq_num
-		    then value
-		    else hd nums_list :: value
-		end
-      in
-	  hd numbers :: filter(hd numbers, tl numbers)
-      end
+fun contains (_, []) = false
+  | contains (target, n::ns') = if target = n then true else contains(target, ns') 
+  
+fun remove_duplicate ([]) = []
+  | remove_duplicate (n::[]) = [n] 
+  | remove_duplicate (numbers) = let fun helper ([], acc) = acc
+				       | helper (n::ns', acc) = if contains(n, acc)
+								then helper(ns', acc)
+								else helper(ns', acc @ [n])
+				 in
+				     helper(numbers, [])
+				 end
 
 fun number_in_months_challenge (dates: (int*int*int) list, months: int list) =
     number_in_months(dates, remove_duplicate(months))
